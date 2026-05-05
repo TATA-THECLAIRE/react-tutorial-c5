@@ -1,0 +1,24 @@
+# Go
+
+go.sum
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+
+# Next.js
+frontend/.next/
+
+
+# Node
+node_modules/
+npm-debug.log*
+
+
+# IDE
+.vscode/

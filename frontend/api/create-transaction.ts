@@ -1,32 +1,32 @@
-import { TransactionType } from "@/types/interfaces";
-import axios from "axios";
+import { CreateTransactionResponse, TransactionType } from "@/types/interfaces";
+import { authHeaders } from "@/app/lib/auth"
 
-export interface ResponseType {
-	success: boolean;
-	error: any;
-}
 
-const BASEURL = "http://localhost:8065";
 
-export const saveTransaction = (payload: TransactionType) => {
-	console.log("Fetch function executed!");
-	let response: ResponseType = {
-		error: null,
-		success: true,
-	};
-	// axios
-	// 	.post(BASEURL + "/api/v1/transactions", payload)
-	// 	.then((res) => {
-	// 		response = {
-	// 			error: undefined,
-	// 			success: true,
-	// 		};
-	// 	})
-	// 	.catch((err) => {
-	// 		response = {
-	// 			error: err,
-	// 			success: false,
-	// 		};
-	// 	});
-	return response;
+
+const BASEURL = "http://localhost:8080";
+
+export const saveTransaction = async (
+  payload:{
+	amount: number;
+	reason: string;
+	type: "saving" | "withdrawal";
+  }
+): Promise<CreateTransactionResponse> => {
+  try {
+    const res = await fetch(BASEURL + "/api/v1/transactions", {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(()=> ({}));
+      return { success: false, error: data.error || "Request failed" };
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
 };

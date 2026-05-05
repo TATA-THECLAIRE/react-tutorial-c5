@@ -1,0 +1,2 @@
+--
+ALTER TABLE transactions ALTER COLUMN amount TYPE NUMERIC USING amount::NUMERIC;

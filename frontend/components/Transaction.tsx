@@ -1,8 +1,20 @@
 import { TransactionType } from "@/types/interfaces";
 import React from "react";
 
-function Transaction({ amount, type, reason, createdAt }: TransactionType) {
+
+function Transaction({ amount, type, reason, created_at }: TransactionType) {
 	const isSaving = type === "saving";
+
+	const formattedDate = created_at
+    ? new Date(created_at).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "—";
+
+
+
 	return (
 		<tr className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
 			<td className="py-3 px-4 font-medium text-slate-800 dark:text-slate-200">
@@ -23,7 +35,7 @@ function Transaction({ amount, type, reason, createdAt }: TransactionType) {
 				{reason}
 			</td>
 			<td className="py-3 px-4 text-slate-500 dark:text-slate-500 text-sm">
-				{new Date(createdAt).toLocaleDateString()}
+				{new Date(created_at).toLocaleDateString()}
 			</td>
 		</tr>
 	);

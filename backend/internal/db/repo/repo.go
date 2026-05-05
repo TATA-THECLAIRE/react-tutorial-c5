@@ -15,6 +15,7 @@ import (
 	"github.com/rs/zerolog"
 
 	"piggy.com/internal/db/sqlc"
+	
 )
 
 type Repository interface {
@@ -50,8 +51,8 @@ func MigrateUp(dbURL string, migrationsPath string, logger zerolog.Logger) error
 	}
 
 	// Create a new migration instance with the absolute path
-	m, err := migrate.New(
-		"file://"+absPath,
+	sourceURL := "file://" + filepath.ToSlash(absPath)
+	m, err := migrate.New(sourceURL,
 		dbURL,
 	)
 	if err != nil {

@@ -4,17 +4,17 @@ type User struct {
 }
 
 type CreateTransactionPayload struct {
-	Amount    string `json:"amount"`
+	Amount    float64 `json:"amount"`
 	Type      string `json:"type"`
 	Reason    string `json:"reason"`
 }
 
 type Transaction struct {
 	ID        *int32 `json:"id"`
-	Amount    string `json:"amount"`
+	Amount    float64 `json:"amount"`
 	Type      string `json:"type"`
 	Reason    string `json:"reason"`
-	CreatedAt string `json:"createdAt"`
+	CreatedAt string `json:"created_at"`
 }
 
 const (

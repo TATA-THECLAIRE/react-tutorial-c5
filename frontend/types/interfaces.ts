@@ -1,12 +1,21 @@
 export interface TransactionType {
-	amount: number | string;
+	amount: number ;
 	reason: string;
-	createdAt: string;
+	created_at: string;
 	type: "saving" | "withdrawal";
-	id?: string;
+	id?: number;
 }
 
 export interface GetTransactionsParamsType {
 	type?: "saving" | "withdrawal";
 	size?: number;
+}
+
+export interface TransactionsResponse {
+  transactions: TransactionType[];
+}
+
+export interface CreateTransactionResponse {
+  success: boolean;
+  error?: string;
 }

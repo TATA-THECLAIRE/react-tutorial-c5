@@ -1,0 +1,2 @@
+
+ALTER TABLE transactions ALTER COLUMN amount TYPE VARCHAR(255) USING amount::TEXT;
