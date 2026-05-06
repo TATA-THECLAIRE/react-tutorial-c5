@@ -71,3 +71,20 @@ func (h *Handler) GetTransactions(c *gin.Context) {
 
 	c.JSON(http.StatusOK, transactions)
 }
+
+
+func (h *Handler) GetDashboardStats(c *gin.Context) {
+	userID, ok := getUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	stats, err := h.service.GetDashboardStats(c, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, stats)
+}

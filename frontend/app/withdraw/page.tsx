@@ -4,25 +4,28 @@ import Button from "@/components/Button";
 import Navbar from "@/components/navbar";
 import { TransactionType } from "@/types/interfaces";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { useGetTransactions } from "@/hooks/useFetchTransactions";
+import { getDashboardStats } from "@/api/get-stats";
 
 function WithdrawPage() {
 	const router = useRouter();
 	const [amount, setAmount] = useState("");
 	const [reason, setReason] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [netBalance, setNetBalance] = useState(0);
+    const [statsLoading, setStatsLoading] = useState(true);
 
-	  // Fetch balance
-	const { transactions } = useGetTransactions({});
-	const totalSavings = transactions
-		.filter((t) => t.type === "saving")
-		.reduce((sum, t) => sum + Number(t.amount), 0);
-	const totalWithdrawals = transactions
-		.filter((t) => t.type === "withdrawal")
-		.reduce((sum, t) => sum + Number(t.amount), 0);
-	const netBalance = totalSavings - totalWithdrawals;
+	useEffect(() => {
+    getDashboardStats().then((stats) => {
+      if (stats) setNetBalance(stats.balance);
+      setStatsLoading(false);
+    });
+  }, []);
+
+
+
 
 	const handleWithdraw = async() => {
 		const withdrawAmount = Number(amount);
@@ -73,7 +76,7 @@ function WithdrawPage() {
 					    }`}>
 						Available balance:{" "}
 						<span className="font-bold">
-						{netBalance.toLocaleString("fr-CM")} CFA
+						{statsLoading ? "..." : `${netBalance.toLocaleString("fr-CM")} CFA`}
 						</span>
 						{netBalance < 25 && " ⚠️ Too low to spend"}
 					</p>
@@ -103,7 +106,7 @@ function WithdrawPage() {
 							/>
 						</div>
 						<div className="pt-2">
-							<Button text="Withdraw" onClick={handleWithdraw} />
+							<Button text={loading ? "Processing..." : "Withdraw"} onClick={handleWithdraw} />
 						</div>
 					</form>
 				</div>

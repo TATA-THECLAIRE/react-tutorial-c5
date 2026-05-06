@@ -4,21 +4,42 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
 
 	"piggy.com/internal/db/repo"
 	"piggy.com/internal/handlers"
-	"piggy.com/internal/piggyservice"
 	"piggy.com/internal/middleware"
-	
+	"piggy.com/internal/piggyservice"
 )
 
 func main() {
+		// Load .env file
+	if err := godotenv.Load(); err != nil {
+		panic("Error loading .env file")
+	}
+
+		// Build DB URL from env
+	dbUrl := fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+	)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	
 	route := gin.Default()
 
 	// Configure Cors
@@ -42,7 +63,7 @@ func main() {
 
 	// Initialize repo and apply migrations
 	ctx := context.Background()
-	dbUrl := "postgres://piggy:secret@127.0.0.1:5432/piggy?sslmode=disable"
+
 	
 	dbConn, err := pgxpool.New(ctx, dbUrl)
 	if err != nil {
@@ -66,6 +87,7 @@ func main() {
 	protected := route.Group("/api/v1", middleware.RequireAuth())
 	protected.POST("/transactions", handlers.CreateTransaction)
 	protected.GET("/transactions", handlers.GetTransactions)
+	protected.GET("/dashboard/stats", handlers.GetDashboardStats)
 	fmt.Println("Server running on port 8080")
 	route.Run()
 }

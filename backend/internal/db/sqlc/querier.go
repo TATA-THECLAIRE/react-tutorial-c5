@@ -11,10 +11,14 @@ import (
 )
 
 type Querier interface {
+	CreateAccount(ctx context.Context, userID pgtype.UUID) (UserAccount, error)
 	CreateTransaction(ctx context.Context, arg CreateTransactionParams) (Transaction, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	DecrementBalance(ctx context.Context, arg DecrementBalanceParams) (UserAccount, error)
+	GetAccountByUserID(ctx context.Context, userID pgtype.UUID) (UserAccount, error)
 	GetTransactions(ctx context.Context, userID pgtype.UUID) ([]Transaction, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
+	IncrementBalance(ctx context.Context, arg IncrementBalanceParams) (UserAccount, error)
 }
 
 var _ Querier = (*Queries)(nil)
