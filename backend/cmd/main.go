@@ -20,20 +20,14 @@ import (
 )
 
 func main() {
-		// Load .env file
-	if err := godotenv.Load(); err != nil {
-		panic("Error loading .env file")
-	}
+	godotenv.Load()
+
 
 		// Build DB URL from env
-	dbUrl := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
-	)
+	dbUrl := os.Getenv("DB_URL")
+	if dbUrl == "" {
+		panic("DATABASE_URL is not set")
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -44,7 +38,7 @@ func main() {
 
 	// Configure Cors
 	route.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins:     []string{"http://localhost:3000","https://your-frontend.onrender.com"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -70,6 +64,8 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Database connection established!")
+
+
 	repostory := repo.NewRepository(dbConn)
 	if err :=repo.MigrateUp(dbUrl, "./internal/db/migrations", zerolog.Nop().With().Logger());err !=nil{
 		panic(err)
@@ -88,6 +84,7 @@ func main() {
 	protected.POST("/transactions", handlers.CreateTransaction)
 	protected.GET("/transactions", handlers.GetTransactions)
 	protected.GET("/dashboard/stats", handlers.GetDashboardStats)
-	fmt.Println("Server running on port 8080")
-	route.Run()
+	
+	fmt.Println("Server running on port", port)
+	route.Run(":" + port)
 }
