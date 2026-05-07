@@ -4,26 +4,41 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
 
 	"piggy.com/internal/db/repo"
 	"piggy.com/internal/handlers"
-	"piggy.com/internal/piggyservice"
 	"piggy.com/internal/middleware"
-	
+	"piggy.com/internal/piggyservice"
 )
 
 func main() {
+	godotenv.Load()
+
+
+		// Build DB URL from env
+	dbUrl := os.Getenv("DB_URL")
+	if dbUrl == "" {
+		panic("DATABASE_URL is not set")
+	}
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	
 	route := gin.Default()
 
 	// Configure Cors
 	route.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins:     []string{"http://localhost:3000","https://your-frontend.onrender.com"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -42,13 +57,15 @@ func main() {
 
 	// Initialize repo and apply migrations
 	ctx := context.Background()
-	dbUrl := "postgres://piggy:secret@127.0.0.1:5432/piggy?sslmode=disable"
+
 	
 	dbConn, err := pgxpool.New(ctx, dbUrl)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Database connection established!")
+
+
 	repostory := repo.NewRepository(dbConn)
 	if err :=repo.MigrateUp(dbUrl, "./internal/db/migrations", zerolog.Nop().With().Logger());err !=nil{
 		panic(err)
@@ -66,6 +83,8 @@ func main() {
 	protected := route.Group("/api/v1", middleware.RequireAuth())
 	protected.POST("/transactions", handlers.CreateTransaction)
 	protected.GET("/transactions", handlers.GetTransactions)
-	fmt.Println("Server running on port 8080")
-	route.Run()
+	protected.GET("/dashboard/stats", handlers.GetDashboardStats)
+	
+	fmt.Println("Server running on port", port)
+	route.Run(":" + port)
 }

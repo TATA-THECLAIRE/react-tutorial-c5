@@ -40,6 +40,12 @@ func (h *Handler) Register(ctx *gin.Context) {
         return
     }
 
+    // Create account for new user
+    if err := h.service.CreateAccount(ctx, user.ID); err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "could not create account"})
+        return
+    }
+
     token, err := auth.GenerateToken(user.ID, user.Username)
     if err != nil {
         ctx.JSON(http.StatusInternalServerError, gin.H{"error": "could not generate token"})

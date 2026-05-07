@@ -24,3 +24,11 @@ type User struct {
 	Password  string             `json:"password"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
+
+type UserAccount struct {
+	AccountID pgtype.UUID        `json:"account_id"`
+	UserID    pgtype.UUID        `json:"user_id"`
+	Balance   pgtype.Numeric     `json:"balance"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
