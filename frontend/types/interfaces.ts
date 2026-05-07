@@ -1,7 +1,7 @@
 export interface TransactionType {
 	amount: number ;
 	reason: string;
-	created_at: string;
+	created_at?: string;
 	type: "saving" | "withdrawal";
 	id?: number;
 }

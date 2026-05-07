@@ -2,6 +2,13 @@ import { TransactionType } from "@/types/interfaces";
 import React from "react";
 
 
+export interface TransactionProps {
+  amount: number;
+  type: "saving" | "withdrawal";
+  reason: string;
+  created_at?: string;
+}
+
 function Transaction({ amount, type, reason, created_at }: TransactionType) {
 	const isSaving = type === "saving";
 
@@ -35,7 +42,7 @@ function Transaction({ amount, type, reason, created_at }: TransactionType) {
 				{reason}
 			</td>
 			<td className="py-3 px-4 text-slate-500 dark:text-slate-500 text-sm">
-				{new Date(created_at).toLocaleDateString()}
+				{created_at ? new Date(created_at).toLocaleDateString() : "—"}
 			</td>
 		</tr>
 	);
