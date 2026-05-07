@@ -4,7 +4,9 @@ import { authHeaders } from "@/app/lib/auth"
 
 
 
-const BASEURL = "http://localhost:8080";
+const BASEURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
+  
 
 export const saveTransaction = async (
   payload:{
