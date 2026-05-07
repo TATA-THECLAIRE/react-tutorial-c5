@@ -6,7 +6,7 @@ export interface GetTransactionsRes {
 	error: any;
 }
 
-const BASEURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const BASEURL = process.env.NEXT_PUBLIC_API_URL;
 
 export const getAllTransactions = async (
 	query: GetTransactionsParamsType,
